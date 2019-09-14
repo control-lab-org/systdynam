@@ -1,5 +1,5 @@
 /********************************************************
- * analizador_sintactico.y
+ * lexical_analyzer.y
  ********************************************************/
 %{
 #include <stdlib.h>
@@ -359,7 +359,6 @@ void printf_add_fun()
 }
 
 
-
 void print_cabeceras(void)
 {
     if((f=fopen("ccode_generate.c","a"))==NULL)
@@ -373,8 +372,6 @@ void print_cabeceras(void)
     printf(" \n");
     //printf(" #define ORDEN %d",nfuni);
    //  printf_add_var_define();
-    
-    
     
 }
 
@@ -439,7 +436,6 @@ void print_funciones(void)
     fprintf(f," float _d (float xa,float xb) {return xa/xb;} \n");
     fprintf(f," float euler(int i,float *x,float u,float t,float dt,float (*funcion)(float *, float, float))\n");
     fprintf(f," { return dt*funcion(x,u,t)+ x[i]; }");
-    
     
 
 }
