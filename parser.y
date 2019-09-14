@@ -7,13 +7,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <map>
-#include <cstdlib> //-- I need this for atoi
+#include <cstdlib> 
 
 #define NUM_FUN_DEF 14
 #define NUM_PAR_DEF 5
 using namespace std;
 
-//-- Lexer prototype required by bison, aka getNextToken()
+//-- Prototipes for the lexer
+
 int yylex(); 
 int yyerror(const char *p) { cerr << "Error!" << endl; }
 void print_cabeceras(void);
@@ -68,69 +69,53 @@ int cero;
 
 //-- GRAMMAR RULES ---------------------------------------
 %%
-/*
-run:	modelo run 
-        | parametros run
-        | modelo    
-        | parametros    
-
- */
-
 run:	
-        | modelo                    {   
-                                        //IMPIMRE ADVERTENCIA DE PARAMETROS POR DEFAUL 
-                                        printf("\nWarnning: Se definieron todos los parametros por default\n\n"); 
-                                        for(int i=0;i<NUM_PAR_DEF-2;i++)
-                                            printf("%s=%0.2f ",n_parametros[i],val_parametros[i]); 
-                                         for(int i=NUM_PAR_DEF-2;i<NUM_PAR_DEF;i++)
-                                            printf("%s=%d ",n_parametros[i],(int)val_parametros[i]); 
-                                        printf("\n");
-                                        //FIN IMPIMRE ADVERTENCIA DE PARAMETROS POR DEFAUL 
-                                        
-                                        // IMPIMRE ADVERTENCIA DE CONDICIONES INCIALES POR DEFAUL 
-                                         printf("\nWarnning: Se definieron todos las C.I por default\n\n"); 
-                                    }
+        | modelo            { //IMPIMRE ADVERTENCIA DE PARAMETROS POR DEFAUL 
+                              printf("\nWarnning: Se definieron todos los parametros por default\n\n"); 
+                              for(int i=0;i<NUM_PAR_DEF-2;i++)
+                                printf("%s=%0.2f ",n_parametros[i],val_parametros[i]); 
+                              for(int i=NUM_PAR_DEF-2;i<NUM_PAR_DEF;i++)
+                                printf("%s=%d ",n_parametros[i],(int)val_parametros[i]); 
+                              printf("\n");
+                              //FIN IMPIMRE ADVERTENCIA DE PARAMETROS POR DEFAUL 
+                              // IMPIMRE ADVERTENCIA DE CONDICIONES INCIALES POR DEFAUL 
+                              printf("\nWarnning: Se definieron todos las C.I por default\n\n"); 
+                            }
                                     
-        | modelo ciniciales         {   
-                                        //IMPIMIR ADVERTENCIA DE PARAMETROS POR DEFAULT    
-                                        printf("\nWarnning: Se definieron todos los parametros por default\n\n"); 
-
-                                    }
+        | modelo ciniciales {//IMPIMIR ADVERTENCIA DE PARAMETROS POR DEFAULT    
+                             printf("\nWarnning: Se definieron todos los parametros por default\n\n"); 
+                            }
         
-        | parametros modelo         {   
-                                        // IMPIMRE ADVERTENCIA DE CONDICIONES INCIALES POR DEFAULT
-                                        printf("\nWarnning: Se definieron todos las C.I por default\n\n"); 
-                                    }
-        | ciniciales             {   
-                                        // IMPIMRE ADVERTENCIA DE SOLO SE HAN DEFINIDO CONDICIONES INCIALES*/
-                                        printf("\nWarnning: Se definieron solo las C.I \n\n"); 
-                                    }
-        | parametros             {   
-                                        // IMPIMRE ADVERTENCIA DE SOLO SE HAN DEFINIDO PARAMETROS */
-                                        printf("\nWarnning: Se definieron solo los parametros\n\n"); 
-                                    }
+        | parametros modelo { // IMPIMRE ADVERTENCIA DE CONDICIONES INCIALES POR DEFAULT
+                              printf("\nWarnning: Se definieron todos las C.I por default\n\n"); 
+                            }
+        | ciniciales        { // IMPIMRE ADVERTENCIA DE SOLO SE HAN DEFINIDO CONDICIONES INCIALES*/
+                              printf("\nWarnning: Se definieron solo las C.I \n\n"); 
+                            }
+        | parametros        { // IMPIMRE ADVERTENCIA DE SOLO SE HAN DEFINIDO PARAMETROS */
+                              printf("\nWarnning: Se definieron solo los parametros\n\n"); 
+                            }
         | parametros modelo ciniciales 
         
         
         
         
-ciniciales: STRINI condiciones STOP         { 
-                                                /* IMPIMRE CONDICIONES INICIALES */
-                                                int lfun;
-                                                char nombre_fun[25];
-                                                for(int i=0;i<nfuni;i++)
-                                                {
-                                                    lfun=strlen(n_fun[i]);                                                                                                       sprintf(nombre_fun,"%s",n_fun[i]);
-                                                    nombre_fun[lfun-1]='\0'; 
-                                                    printf("%s=%0.2f\n",nombre_fun,val_ciniciales[i]);
-                                                }
-                                                /* FIN DE IMPIMRE CONDICIONES INICIALES */
-                                            }
+ciniciales: STRINI condiciones STOP { /* IMPIMRE CONDICIONES INICIALES */
+                                        int lfun;
+                                        char nombre_fun[25];
+                                        for(int i=0;i<nfuni;i++)
+                                        {
+                                            lfun=strlen(n_fun[i]);                                                                                                       sprintf(nombre_fun,"%s",n_fun[i]);
+                                            nombre_fun[lfun-1]='\0';
+                                            printf("%s=%0.2f\n",nombre_fun,val_ciniciales[i]);
+                                        }
+                                      /* FIN DE IMPIMRE CONDICIONES INICIALES */
+                                    }
 
 condiciones: condiciones MORE condiciones {}
-           | INITALC EQL exppc        {   char nombre_fun[25];
-                                         char nombre_ci[25];
-                                         char bbf1[20];
+           | INITALC EQL exppc      {   char nombre_fun[25];
+                                        char nombre_ci[25];
+                                        char bbf1[20];
                                         int i=0,lfun,bandera=1,lcin=0;
                                         if(nfuni>0)
                                         {
@@ -142,10 +127,7 @@ condiciones: condiciones MORE condiciones {}
                                                 lfun=strlen(n_fun[i]);
                                                 
                                                 sprintf(nombre_fun,"%s",n_fun[i]);
-                                                nombre_fun[lfun-1]='\0';
-                                                //nombre_fun[lfun]='0';
-                                               
-                                               // printf("FUNCION:%s  =  %s\n",nombre_fun,$1);                                
+                                                nombre_fun[lfun-1]='\0';                            
                                                 if(!strcmp(nombre_fun,nombre_ci))
                                                 {   bandera=0; 
                                                     break;
@@ -154,15 +136,12 @@ condiciones: condiciones MORE condiciones {}
                                             }
                                             
                                             if(!bandera)
-                                            { //printf("existe %s=%s\n",$1,$3);
-                                                val_ciniciales[ncinii]=atof($3);
+                                            {  val_ciniciales[ncinii]=atof($3);
                                                // printf("\n%0.2f\n",val_ciniciales[ncinii]);
                                                 ncinii++;
                                             }
-                                            
                                             else
                                             {   
-                                                
                                                 printf("%s' no definida\n",nombre_ci);
                                             }
                                         }
@@ -174,17 +153,12 @@ condiciones: condiciones MORE condiciones {}
                                     }
                                     
 exppc:   NUM                        { sprintf($$,"%s",$1);}
-        |OPA NUM                     {
-                                            switch($1) 
+        |OPA NUM                    {       switch($1) 
                                             {	case '+': sprintf($$,"%s",$2); break;
                                                 case '-': sprintf($$,"-%s",$2); break;
                                             }    
                                     }
                         
-
-                
-
-        
         
 parametros: STRPAR ini  STOP       {    if(val_parametros[_tf]<=val_parametros[_ti])    {printf("Error: tf menor o igual q ti\n"); exit(1);}
                                         if(val_parametros[_dt]<= 0.001)                 {printf("Error: Se excedio paso integracion dt_min=0.001\n"); exit(1);}
@@ -203,100 +177,86 @@ parametros: STRPAR ini  STOP       {    if(val_parametros[_tf]<=val_parametros[_
 
 
 ini:  
-        ini MORE ini             {sprintf($$,"%s%s",$1,$3);}
-        | TI EQL expp          {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_ti]=atof($3);}
+        ini MORE ini         {sprintf($$,"%s%s",$1,$3);}
+        | TI EQL expp        {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_ti]=atof($3);}
         | TF EQL expp        {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_tf]=atof($3);}
-        | DT EQL expp         {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_dt]=atof($3);}
-        | NINPUT EQL expp        {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_entradas]=atof($3);}
-        | NOUTPUT EQL expp       {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_salidas]=atof($3);}
+        | DT EQL expp        {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_dt]=atof($3);}
+        | NINPUT EQL expp    {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_entradas]=atof($3);}
+        | NOUTPUT EQL expp   {sprintf($$," %s=%s",$1,$3); npari++; val_parametros[_salidas]=atof($3);}
         
 
-expp:   NUM                      {   sprintf($$,"%s",$1); }
-
-
-
-        
-modelo: STRT vvar STOP  		{ imprime($2);   }
+expp:   NUM               {   sprintf($$,"%s",$1); }
+       
+modelo: STRT vvar STOP    { imprime($2);   }
 
 
 vvar:   
-        vvar MORE vvar       { sprintf($$,"%s%s",$1,$3);}
-        |  res               { sprintf($$,"%s",$1);}
-        |  deq               { sprintf($$,"%s","");}
+        vvar MORE vvar    { sprintf($$,"%s%s",$1,$3);}
+        |  res            { sprintf($$,"%s",$1);}
+        |  deq            { sprintf($$,"%s","");}
         
       
 
 res:
-        VAR EQL exp         {  
+        VAR EQL exp       {  
                                 sprintf($$,"  #define %s %s\n",$1,$3);
                                 sprintf(n_var[nvari++],"%s",$1);		                                        
-                            }
+                          }
 deq:
-            DEQQ EQL exp    {   int len=strlen($1);
+        DEQQ EQL exp      {   int len=strlen($1);
                                 $1[len-1]='p';
                                 //almacena la defincion
                                 sprintf(def_fun[nfuni],"return %s;",$3);
                                
                                //guarda el nombre y aumenta el indice
                                 sprintf(n_fun[nfuni++],"%s",$1);
+                          }
+
+exp:    exp OPA exp       {   switch($2)
+                                { case '-':    sprintf($$,"%s(%s,%s)",op_r,$1,$3); break;
+                                  case '+':    sprintf($$,"%s(%s,%s)",op_s,$1,$3); break;   
+                                }
+                          }
+        | exp OPA1 exp    { switch($2)
+                            { case '/':   cero=encuentracero($3);
+                                          if(!cero)
+                                            sprintf($$,"%s(%s,%s)",op_d,$1,$3); 
+                                          else
+                                          {
+                                                sprintf($$,"Error Division por cero.."); 
+                                                printf("%s",$$);
+                                                exit(1);
+                                          }
+                                          break;   
+                              case '*':    sprintf($$,"%s(%s,%s)",op_m,$1,$3); break;   
                             }
-
-			
-
-									
-exp:    exp OPA exp    			{ switch($2)
-										  { case '-':    sprintf($$,"%s(%s,%s)",op_r,$1,$3); break;
-											 case '+':    sprintf($$,"%s(%s,%s)",op_s,$1,$3); break;   
-										  }
-										}
-		  | exp OPA1 exp  		{ switch($2)
-										  { case '/':   cero=encuentracero($3);
-                                                        if(!cero)
-                                                            sprintf($$,"%s(%s,%s)",op_d,$1,$3); 
-                                                        else
-                                                        {
-                                                            sprintf($$,"Error Division por cero.."); 
-                                                            printf("%s",$$);
-                                                            exit(1);
-                                                        }
-                                                            
-                                                        break;   
-														  
-											case '*':    sprintf($$,"%s(%s,%s)",op_m,$1,$3); break;   
-										  }
-										}
-		  | OPA exp %prec OPA1  { switch($1) 
-                                {	case '+': sprintf($$,"%s",$2); break;
+                          }
+        | OPA exp %prec OPA1  { switch($1) 
+                                {   case '+': sprintf($$,"%s",$2); break;
                                     case '-': sprintf($$,"%s(%s)",op_ng,$2); break;
                                 }    
                               }
-		  | ffun		%prec VAR	{	
-                                        /*ṕasa directo $$=$1*/	
-                                    }
-		  
-		  | NUM 						{  sprintf($$,"%s(%s)",op_n,$1);    	}
-		  | VAR               {
-                                        /* if(no_existe_var($1))
-                                            {
-                                                printf("%s :Indefinida...\n",$1);
-                                                exit(1);
-                                            }*/
-											 
-		
-											 sprintf($$,"%s",$1);						
-                                }
-        |OFNT exp CFNT          { sprintf($$,"%s",$2);}
-		  
-ffun:	
-		 VAR OFNT exp CFNT	   {   int existe=buscar_funcion($1);
+        | ffun %prec VAR      { /*ṕasa directo $$=$1*/          }
+        | NUM                 {  sprintf($$,"%s(%s)",op_n,$1);  }
+        | VAR                 { /* if(no_existe_var($1))
+                                {
+                                    printf("%s :Indefinida...\n",$1);
+                                    exit(1);
+                                }*/
+                                sprintf($$,"%s",$1);
+                              }
+        |OFNT exp CFNT        { sprintf($$,"%s",$2);}
+
+ffun:
+        VAR OFNT exp CFNT	   {   int existe=buscar_funcion($1);
                                    if(existe)
                                     sprintf($$,"%s(%s)",$1,$3);
-                                   else
-                                   {
+                                    else
+                                    {
                                         sprintf($$,"Funcion %s no definida..\n",$1); 
-										printf("%s",$$); 
-										exit(1);
-                                   }
+                                        printf("%s",$$); 
+                                        exit(1);
+                                    }
                                 }
 
 %%
@@ -335,13 +295,13 @@ int buscar_funcion(char *funcion_entrada)
 }
 
 int no_existe_var(char *v)
-{	
-	int xxi=0, xxj=1;
-	for(;xxi<nvari && xxj;xxi++)
-	{
-		xxj=strcmp(n_var[xxi],v);
-	}
-	return xxj;
+{
+    int xxi=0, xxj=1;
+    for(;xxi<nvari && xxj;xxi++)
+    {
+        xxj=strcmp(n_var[xxi],v);
+    }
+    return xxj;
 }
 
 void printf_add_var(void)
@@ -559,26 +519,22 @@ void print_main(char* xf)
     fprintf(f,"   // INCIO rutina de pausa con boton\n\n");
     fprintf(f,"   // FIN rutina de pausa con boton\n\n");
     
-	printf("   for(t=ti;t<tf;t+=dt)\n"); fprintf(f,"   for(t=ti;t<tf;t+=dt)\n");
-	printf("   {\n");  fprintf(f,"   {\n");
-	
-	printf("     while(!ADC16_GetChannelStatusFlags(ADC16_1_PERIPHERAL,0U));\n");
-	fprintf(f,"     while(!ADC16_GetChannelStatusFlags(ADC16_1_PERIPHERAL,0U));\n");
-	
-	
-	printf("     u=ADC16_GetChannelConversionValue(ADC16_1_PERIPHERAL,0U)*0.0080586;\n\n");
-	fprintf(f,"     u=ADC16_GetChannelConversionValue(ADC16_1_PERIPHERAL,0U)*0.0080586;\n\n");
-	
-	print_for("     {\n       xs[i]=euler(i,x0,u,t,dt,funcion[i]);\n       x0[i]=xs[i];\n       ftoa(xs[i],output[i+1],3);\n     }\n");
-	
-	
-	printf("\n     ftoa(t,output[0],3);"); fprintf(f,"\n     ftoa(t,output[0],3);");
-	printf_imprime_seniales();
+    printf("   for(t=ti;t<tf;t+=dt)\n"); fprintf(f,"   for(t=ti;t<tf;t+=dt)\n");
+    printf("   {\n");  fprintf(f,"   {\n");
+    
+    printf("     while(!ADC16_GetChannelStatusFlags(ADC16_1_PERIPHERAL,0U));\n");
+    fprintf(f,"     while(!ADC16_GetChannelStatusFlags(ADC16_1_PERIPHERAL,0U));\n");
+    
+    printf("     u=ADC16_GetChannelConversionValue(ADC16_1_PERIPHERAL,0U)*0.0080586;\n\n");
+    fprintf(f,"     u=ADC16_GetChannelConversionValue(ADC16_1_PERIPHERAL,0U)*0.0080586;\n\n");
+    
+    print_for("     {\n       xs[i]=euler(i,x0,u,t,dt,funcion[i]);\n       x0[i]=xs[i];\n       ftoa(xs[i],output[i+1],3);\n     }\n");
+        
+    printf("\n     ftoa(t,output[0],3);"); fprintf(f,"\n     ftoa(t,output[0],3);");
+    printf_imprime_seniales();
     printf("     vTaskDelay(xDelay);\n");
     fprintf(f,"     vTaskDelay(xDelay);\n");
-	printf("   }\n"); fprintf(f,"   }\n");  
-    
-    
+    printf("   }\n"); fprintf(f,"   }\n");  
     
     printf("\n\n    // INCIO rutina de pausa con boton\n\n");
     printf("    // FIN   rutina de pausa con boton\n");
